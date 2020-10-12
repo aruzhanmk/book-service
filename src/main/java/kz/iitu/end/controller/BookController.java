@@ -6,6 +6,9 @@ import kz.iitu.end.entity.Book;
 import kz.iitu.end.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -18,10 +21,18 @@ public class BookController {
     BookRepository bookRepository;
 
     @ApiOperation(value	= "List all books", response = Book.class, responseContainer = "List")
-    @GetMapping("")
+    @GetMapping("/list")
     public List<Book> getAllBooks()
     {
         return bookRepository.findAll();
+    }
+
+    @RequestMapping(value = {""}, method = RequestMethod.GET)
+    public ModelAndView listBooks() {
+        ModelAndView modelAndView = new ModelAndView("books");
+        List<Book> books = bookRepository.findAll();
+        modelAndView.addObject("book", books);
+        return modelAndView;
     }
 
     @ApiOperation(value	= "Get book by ID", response = Book.class)
@@ -53,12 +64,14 @@ public class BookController {
 //        return bookRepository.findBookByGenres_Genre(genre);
 //    }
 
-    @ApiOperation(value	= "Add new book", response = Book.class)
-    @PostMapping("/add/")
-    public Book addBook(@RequestBody Book book)
-    {
-        return bookRepository.save(book);
-    }
+//    @ApiOperation(value	= "Add new book", response = Book.class)
+//    @PostMapping("/add")
+//    public Book addBook(@RequestParam("id") Long id, @RequestParam("title") String title, @RequestParam("price") Double price)
+//    {
+//        return bookRepository.save(id,title,price);
+//
+//    }
+
 
     @ApiOperation(value	= "Update book", response = Book.class)
     @PutMapping("/update/{id}")
@@ -68,6 +81,7 @@ public class BookController {
         book.setId(id);
         return bookRepository.save(book);
     }
+
 
     @ApiOperation(value	= "Delete book")
     @GetMapping("/delete/{id}")
